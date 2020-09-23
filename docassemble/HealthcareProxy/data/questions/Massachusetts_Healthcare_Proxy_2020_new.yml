@@ -114,7 +114,7 @@ id: Tell us about your healthcare proxy.
 question: |
   Tell us about your healthcare proxy.
 subquestion: |
-  Your healthcare proxy is the person that you are selecting to make your healthcare decisions on your behalf if you are unable to. Please provide the information of the person you have elected to designate as your Agent.
+  Your healthcare proxy is the person that you are selecting to make your healthcare decisions on your behalf if you are unable to. Provide the information of the person you have elected to designate as your Agent.
 fields:
   - 'Healthcare proxy full name (ex: John Doe)': agent_name
   - 'Permanent address': agent_address_street
