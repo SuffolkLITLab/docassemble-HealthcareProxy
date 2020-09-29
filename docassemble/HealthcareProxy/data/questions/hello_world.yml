@@ -1,0 +1,15 @@
+mandatory: True
+question: Hello, ${user_name}. ${secret_message}
+---
+mandatory: True
+question: What is your name?
+subquestion:  |
+  Please be specific.
+fields:
+  -  Full name: user_name
+---
+code: |
+  if user_name == "Scotty":
+    secret_message = "Beam me up!"
+  else:
+    secret_message = " "

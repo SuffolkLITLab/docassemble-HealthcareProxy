@@ -1,0 +1,24 @@
+---
+code: |
+  # This is a comment. notice that we assign a value with =, and we test a value with ==
+  if user_name.lower() == "Scotty":
+    secret_message = "Beam Me Up, Scotty"
+  elif user_name == "Spock":
+    secret_message = "Live long and prosper"
+  else:
+    secret_message = "No message to report."
+---    
+mandatory: True
+code: 
+  user_name = ", Esq."
+---
+question: |
+  Hello, ${user_name}
+subquestion: |
+  ${secret_message}
+mandatory: True
+---
+question: |
+  What is your name?
+fields:
+  - Name: user_name
