@@ -77,7 +77,9 @@ continue button field: Massachusetts_Healthcare_Proxy_2020_intro
 question: |
   Massachusetts Healthcare Proxy Form
 subquestion: |
-  This form can be used to designate someone to make healthcare decision on your behalf if you are unable to do so.
+  This form allows you to designate someone to make healthcare decisions for you if for any reason you become unable to make or communicate your own healthcare decisions. The form will take approximately 20 minutes to complete and will require that two witnesses are present to sign. 
+  
+  For more information about the Massachusetts Health Care Proxy please visit https://masshealthdecisions.org/health-care-proxy/.
 ---
 id: Placeholder preview screen
 continue button field: Massachusetts_Healthcare_Proxy_2020_preview_question
@@ -130,7 +132,7 @@ fields:
 id: Do you have an alternate healthcare proxy?
 continue button field: Do_you_have_an_alternate_healthcare_proxy
 question: |
-  Designate an alternate healthcare prixy
+  Designate an alternate healthcare proxy
 subquestion: |
   You may add an alternate who will take your proxy's place in the event that they are unable or unwilling to make healthcare decisions on your behalf. Add your alternate's details below.
 fields:
@@ -152,9 +154,11 @@ fields:
 ---
 id: exceptions
 question: |
-  Please fill in the following information.
+  Do you want to put any restrictions on the decisions your proxy can make?
+subquestion: |
+  If you want to limit the decisions your healthcare proxy can make, you can list exceptions below. For example, you could add that your healthcare proxy is not authorized to deny pain medications, make life-sustaining decisions, or any other limitation you decide. If you do not wish to put any limitations on the healthcare decisions your proxy can make, you do not need to provide any acceptions.
 fields:
-  - "Do you have any healthcare exceptions?": has_exceptions
+  - "Are there any restrictions to the healthcare decisions your proxy can make?": has_exceptions
     datatype: yesnoradio
     required: false
   - "Please list your exceptions here": agent_exceptions
@@ -166,7 +170,7 @@ id: Is someone other than you signing on your behalf?
 question: |
   Is someone other than you signing on your behalf?
 subquestion: |
-  If you are physically unable to , you may designate a representative to sign on your behalf by completing the fields below. Note that the representative needs to be present with you in order to sign on your behalf.
+  If you are physically unable to, you may designate a representative to sign on your behalf by completing the fields below. Note that the representative needs to be present with you in order to sign on your behalf.
 fields:
   - "Do you have a representative?": has_representative
     datatype: yesnoradio
