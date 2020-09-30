@@ -1,9 +1,0 @@
-question: Hello, ${user_name}
-mandatory: true
----
-question: What is your name?
-fields:
-  -First name: first_name 
-fields: 
-  -Last name: last_name
- 
