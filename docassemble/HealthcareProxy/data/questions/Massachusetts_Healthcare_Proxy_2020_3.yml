@@ -46,13 +46,11 @@ code: |
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy_2020"]["allowed courts"]
   nav.set_section('review_Massachusetts_Healthcare_Proxy_2020')
-  # Below sets the user_role by asking a question.
-  # You can set user_role directly instead to either 'plaintiff' or 'defendant'
-  user_ask_role
-  Are_you_completing_this_form_for_someone_other_than_yourself
+  user_role = 'plaintiff'
+  has_representative
   agent_name_middle
-  Do_you_want_to_add_a_backup_proxy
-  Is_there_anything_you_do_not_want_your_health_proxy_to_decide
+  has_alternate
+  has_exceptions
   users[0].birthdate.format()
   users[0].name.last
   users[0].name.middle
@@ -111,12 +109,15 @@ subquestion: |
    ${Massachusetts_Healthcare_Proxy_2020_attachment['preview']}
 ---
 id: Are you completing this form for someone other than yourself?
-continue button field: Are_you_completing_this_form_for_someone_other_than_yourself
+continue button field: has_representative
 question: |
   Are you completing this form for someone other than yourself?
 subquestion: |
   A respresentative can fill out this form and sign at the direction of someone who is physically unable to complete the form. Skip this page if you are filling this form for yourself.
 fields:
+  - "Is a representative filling this out for you?": has_representative
+    datatype: yesornoradio
+    required: false
   - 'First name': representitive_name
   - 'Middle name': representitive_name_middle
   - 'Last name': representitive_name_last
@@ -124,6 +125,10 @@ fields:
   - 'City': representitive_address_city
   - 'State': representitive_address_state
   - 'Zip': representitive_address_zip
+    showif: has_representative
+---
+objects:
+  - agent: VCIndividual
 ---
 id: Who would you like to name as your proxy?
 question: |
@@ -131,14 +136,16 @@ question: |
 subquestion: |
   You can name someone you trust to make your healthcare decisions if you are not able to make them by adding their details below.
 fields:
-  - 'First name': agent_name_first
-  - 'Middle name': agent_name_middle
-  - 'Last name': agent_name_last
-  - 'Suffix': agent_name_suffix
-  - 'Street address': agent_address_street
-  - 'State': agent_address_state
-  - 'City': agent_address_city
-  - 'Zip': agent_address_zip
+  - Address: agent.address.address
+    address autocomplete: True
+  - Unit: agent.address.unit
+    required: False
+  - City: agent.address.city
+  - State: agent.address.state
+    default: MA
+    code: |
+      states_list()
+  - Zip: agent.address.zip
   - 'Mobile phone': agent_phone_work
   - 'E-mail': agent_email
   - 'Home phone': agent_phone_home
@@ -150,6 +157,9 @@ question: |
 subquestion: |
   You can add a "backup" proxy in the event that your first choice is unwilling or unable to make healthcare decisions on your behalf. It is highly recommended that you discuss this with your backup prior to completing this form. Skip this page if you do not want to select a back-up proxy.
 fields:
+  - "Is a representative filling this out for you?": has_alternate
+    datatype: yesornoradio
+    required: false
   - 'First name': alternate_name_first
   - 'Middle name': alternate_name_middle
   - 'Last name': alternate_name_last
@@ -159,6 +169,7 @@ fields:
   - 'State': alternate_address_state
   - 'Street': alternate_address_street
   - 'Alternate phone': alternate_phone
+    show if: has_alternate
 ---
 id: Is there anything you do not want your health proxy to decide?
 continue button field: Is_there_anything_you_do_not_want_your_health_proxy_to_decide
