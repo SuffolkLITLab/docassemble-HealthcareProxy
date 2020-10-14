@@ -1,0 +1,556 @@
+---
+objects:
+  - agent: VCIndividual
+  - user: VCIndividual
+  - alternate: VCIndividual
+  - representative: VCIndividual
+---
+comment: |
+  The metadata section controls the tab title and saved interview title. You can delete this section if you include this YAML file in another YAML file.
+metadata:
+  title: |
+    Massachusetts Healthcare Proxy
+  short title: |
+    MA Healthcare Proxy
+---
+comment: |
+  This section is used by MAVirtualCourts to control how some of the questions work.
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['Massachusetts_Healthcare_Proxy_2020']"):
+    interview_metadata.initializeObject('Massachusetts_Healthcare_Proxy_2020')
+  interview_metadata['Massachusetts_Healthcare_Proxy_2020'].update({
+    'title': 'Massachusetts Healthcare Proxy',
+    'short title': 'MA Healthcare Proxy',
+    'description': 'You can use this form to name someone you trust to make healthcare decisions on your behalf in the event that you are unable to make healthcare decisions for yourself. It is recommended that you discuss your healthcare choices with the person you name prior to completing this form.  If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.',
+    'original_form': '',
+    'allowed courts': [
+    ],
+    'categories': [
+      'Health and Mental Health',
+    ],
+    'logic block variable': 'Massachusetts_Healthcare_Proxy_2020',
+    'attachment block variable': 'Massachusetts_Healthcare_Proxy_2020_attachment',
+    'typical role': 'unknown',
+  })
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+features:
+  navigation: True
+---
+sections:
+  - review_Massachusetts_Healthcare_Proxy_2020: Review your answers
+---
+id: interview_order_Massachusetts_Healthcare_Proxy_2020
+code: |
+  # This is a placeholder to control logic flow in this interview
+
+  basic_questions_intro_screen 
+  Massachusetts_Healthcare_Proxy_2020_intro
+  # Set the allowed courts for this interview
+  allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy_2020"]["allowed courts"]
+  nav.set_section('review_Massachusetts_Healthcare_Proxy_2020')
+  user_role = 'plaintiff'
+  if has_representative:
+    representative.name.first
+    representative.address.address
+  users[0].birthdate.format()
+  users[0].name.first
+  users[0].address.address
+  agent.name.first
+  agent.address.address
+  if has_alternate:  
+    alternate.name.first
+    alternate.address.address
+  signature_date
+  witnesses[1].name.first
+  witnesses[1].name.middle
+  witnesses[1].name.last
+  witnesses[1].name.suffix
+  witnesses[0].name.middle
+  witnesses[0].name.first
+  witnesses[0].name.last
+  witnesses[0].name.suffix
+  witnesses[0].address.address
+  witnesses[1].address.address
+  witnesses[0].address.city
+  witnesses[0].address.zip
+  witnesses[0].address.state
+  witnesses[1].address.zip
+  witnesses[1].address.city
+  witnesses[1].address.state
+  Massachusetts_Healthcare_Proxy_2020_preview_question # Pre-canned preview screen
+  basic_questions_signature_flow
+  users[0].signature
+  witnesses[1].signature
+  witnesses[0].signature
+  representative[0].signature
+  Massachusetts_Healthcare_Proxy_2020 = True
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Massachusetts Healthcare Proxy
+continue button field: Massachusetts_Healthcare_Proxy_2020_intro
+question: |
+  Massachusetts Healthcare Proxy
+subquestion: |
+  You can use this form to name someone you trust to make healthcare decisions on your behalf in the event that you are unable to make healthcare decisions for yourself. 
+  
+   It is highly recommended that you discuss your healthcare choices with the person you name prior to completing this form.  If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.
+  
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/igZIJ6pGerk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  
+ 
+---
+id: Placeholder preview screen
+continue button field: Massachusetts_Healthcare_Proxy_2020_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${Massachusetts_Healthcare_Proxy_2020_attachment['preview']}
+---
+id: Are you completing this form for someone other than yourself?
+continue button field: Do_you_want_to_add_a_representative
+question: |
+  Are you completing this form for yourself or someone else?
+subquestion: |
+  A respresentative can fill out this form and sign at the direction of someone who is physically unable to do so. Select "No" if you are filling this form for yourself.
+fields:
+  - "Is a representative filling this out for you?": has_representative
+    datatype: yesnoradio
+    required: false
+  - First Name: representative.name.first
+    show if: has_representative
+  - Middle Name: representative.name.middle
+    required: False
+    show if: has_representative
+  - Last Name: representative.name.last
+    show if: has_representative
+  - Suffix: representative.name.suffix
+    required: False
+    show if: has_representative
+  - Street address: representative.address.address
+    address autocomplete: True
+    show if: has_representative
+  - Unit: representative.address.unit
+    required: False
+    show if: has_representative
+  - City: representative.address.city
+    show if: has_representative
+  - State: representative.address.state
+    default: MA   
+    code: |
+      states_list()
+    show if: has_representative
+  - Zip: representative.address.zip
+    required: False
+    show if: has_representative
+---
+id: Who would you like to name as your proxy?
+question: |
+  Who would you like to name as your proxy?
+subquestion: |
+  You can name someone you trust to make your healthcare decisions if you are not able to make them by adding their details below.
+fields:
+ - First Name: agent.name.first
+ - Middle Name: agent.name.middle
+   required: False
+ - Last Name: agent.name.last
+ - Suffix: agent.name.suffix
+   required: False
+ - Street address: agent.address.address
+   address autocomplete: True
+ - Unit: agent.address.unit
+   required: False
+ - City: agent.address.city
+ - State: agent.address.state
+   default: MA   
+   code: |
+     states_list()
+ - Zip: agent.address.zip
+   required: False
+ - 'Mobile phone': agent_phone_work
+ - 'E-mail': agent_email
+ - 'Home phone': agent_phone_home
+---
+id: Do you want to add a backup proxy?
+continue button field: Do_you_want_to_add_a_backup_proxy
+question: |
+  Do you want to add a backup proxy?
+subquestion: |
+  You can add a "backup" proxy in the event that your first choice is unwilling or unable to make healthcare decisions on your behalf. It is highly recommended that you discuss this with your backup prior to completing this form. Select "No" if you do not want to select a back-up proxy.
+fields:
+  - "Do you want to select a back up proxy?": has_alternate
+    datatype: yesnoradio
+    required: false
+  - First Name: alternate.name.first
+    show if: has_alternate
+  - Middle Name: alternate.name.middle
+    required: False
+    show if: has_alternate
+  - Last Name: alternate.name.last
+    show if: has_alternate
+  - Suffix: alternate.name.suffix
+    required: False
+    show if: has_alternate
+  - Street address: alternate.address.address
+    address autocomplete: True
+    show if: has_alternate
+  - Unit: alternate.address.unit
+    required: False
+    show if: has_alternate
+  - City: alternate.address.city
+    show if: has_alternate
+  - State: alternate.address.state
+    default: MA   
+    code: |
+      states_list()
+    show if: has_alternate
+  - Zip: alternate.address.zip
+    required: False
+    show if: has_alternate
+---
+id: Is there anything you do not want your health proxy to decide?
+continue button field: Is_there_anything_you_do_not_want_your_health_proxy_to_decide
+question: |
+  Is there anything you do not want your health proxy to decide?
+subquestion: |
+  You can limit what choices your healthcare proxy can make by adding those limits below. For example, you may have religious beliefs which require the refusal of certain procedures or medications; You may decide to limit exposure to certain kinds of medications (e.g. opioids, antipsychotic medications, etc). You can put any limitations you'd like. You may also leave this question blank if you do not want to place any limits on your proxy.
+fields:
+  - 'Healthcare exceptions': agent_exceptions
+    input type: area
+    required: false
+---
+progress: 100
+mandatory: True
+id: Placeholder download screen
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+  
+  ### Next steps
+  
+  1. Step 1
+  1. Step 2
+  
+  Below is a preview of your form.
+  
+  ${Massachusetts_Healthcare_Proxy_2020_attachment['final'] }
+need: Massachusetts_Healthcare_Proxy_2020
+attachment code: Massachusetts_Healthcare_Proxy_2020_attachment['final']
+---
+objects:
+  - Massachusetts_Healthcare_Proxy_2020_attachment: DADict
+---
+attachment:
+    variable name: Massachusetts_Healthcare_Proxy_2020_attachment[i]
+    name: MA Healthcare Proxy
+    filename: MA_Healthcare_Proxy
+    skip undefined: True
+    pdf template file: Massachusetts_Healthcare_Proxy_2020.pdf
+    fields: 
+      - "user_birthdate": ${ users[0].birthdate.format() }
+      - "user_name_last": ${ users[0].name.last }
+      - "user_name_middle": ${ users[0].name.middle }
+      - "user_name_suffix": ${ users[0].name.suffix }
+      - "user_name_first": ${ users[0].name.first }
+      - "user_address_street": ${ users[0].address.address }
+      - "user_address_city": ${ users[0].address.city }
+      - "user_address_zip": ${ users[0].address.zip }
+      - "user_address_state": ${ users[0].address.state }
+      # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
+      - "user_signature": ${ users[0].signature if i == 'final' else '' }
+      - "signature_date": ${ signature_date }
+      - "signature_date__1": ${ signature_date }
+      # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
+      - "witness2_signature": ${ witnesses[1].signature if i == 'final' else '' }
+      # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
+      - "witness1_signature": ${ witnesses[0].signature if i == 'final' else '' }
+      - "witness2_name_first": ${ witnesses[1].name.first }
+      - "witness2_name_middle": ${ witnesses[1].name.middle }
+      - "witness2_name_last": ${ witnesses[1].name.last }
+      - "witness2_name_suffix": ${ witnesses[1].name.suffix }
+      - "witness1_name_middle": ${ witnesses[0].name.middle }
+      - "witness1_name_first": ${ witnesses[0].name.first }
+      - "witness1_name_last": ${ witnesses[0].name.last }
+      - "witness1_name_suffix": ${ witnesses[0].name.suffix }
+      - "witness1_address_street": ${ witnesses[0].address.address }
+      - "witness2_address_street": ${ witnesses[1].address.address }
+      - "witness1_address_city": ${ witnesses[0].address.city }
+      - "witness1_address_zip": ${ witnesses[0].address.zip }
+      - "witness1_address_state": ${ witnesses[0].address.state }
+      - "witness2_address_zip": ${ witnesses[1].address.zip }
+      - "witness2_address_city": ${ witnesses[1].address.city }
+      - "witness2_address_state": ${ witnesses[1].address.state }
+      - "agent_name_full": ${ agent }
+      - "agent_address_street": ${ agent.address.address }
+      - "agent_address_state": ${ agent.address.state }
+      - "agent_address_city": ${ agent.address.city }
+      - "agent_address_zip": ${ agent.address.zip }
+      - "agent_phone_work": ${ agent_phone_work }
+      - "agent_email": ${ agent_email }
+      - "agent_phone_home": ${ agent_phone_home }
+      - "alternate_name_full": ${ alternate }
+      - "atlernate_address_city": ${ alternate.address.city }
+      - "alternate_address_zip": ${ alternate.address.zip }
+      - "alternate_address_state": ${ alternate.address.state }
+      - "alternate_address_street": ${ alternate.address.address }
+      - "alternate_phone": ${ alternate_phone }
+      - "agent_exceptions": ${ agent_exceptions }
+      - "representative_address_street": ${ representative.address.address }
+      - "representative_name_full": ${ representative }
+      - "representative_address_city": ${ representative.address.city }
+      - "representative_address_state": ${ representative.address.state }
+      - "representative_address_zip": ${ representative.address.zip}
+      - "agent_signature": ${ agent_signature }
+      - "alternate_signature": ${ alternate_signature }
+---
+id: Massachusetts_Healthcare_Proxy_2020 review screen
+event: review_Massachusetts_Healthcare_Proxy_2020
+question: |
+  Placeholder Review Screen
+subquestion: |
+  Edit your answers below
+review: 
+  - Edit: agent_name_first
+    button: |
+      First name:
+      ${ agent_name_first }
+  - Edit: agent_name_middle
+    button: |
+      Middle name:
+      ${ agent_name_middle }
+  - Edit: agent_name_last
+    button: |
+      Last name:
+      ${ agent_name_last }
+  - Edit: agent_name_suffix
+    button: |
+      Suffix:
+      > ${ single_paragraph(agent_name_suffix) }
+  - Edit: agent_address_street
+    button: |
+      Street address:
+      ${ agent_address_street }
+  - Edit: agent_address_state
+    button: |
+      State:
+      ${ agent_address_state }
+  - Edit: agent_address_city
+    button: |
+      City:
+      ${ agent_address_city }
+  - Edit: agent_address_zip
+    button: |
+      Zip:
+      ${ agent_address_zip }
+  - Edit: agent_phone_work
+    button: |
+      Mobile phone:
+      ${ agent_phone_work }
+  - Edit: agent_email
+    button: |
+      E-mail:
+      ${ agent_email }
+  - Edit: agent_phone_home
+    button: |
+      Home phone:
+      ${ agent_phone_home }
+  - Edit: alternate_name_first
+    button: |
+      First name:
+      ${ alternate_name_first }
+  - Edit: alternate_name_middle
+    button: |
+      Middle name:
+      ${ alternate_name_middle }
+  - Edit: alternate_name_last
+    button: |
+      Last name:
+      ${ alternate_name_last }
+  - Edit: alternate_name_suffix
+    button: |
+      Suffix:
+      ${ alternate_name_suffix }
+  - Edit: atlernate_address_city
+    button: |
+      City:
+      ${ atlernate_address_city }
+  - Edit: alternate_address_zip
+    button: |
+      Zip:
+      ${ alternate_address_zip }
+  - Edit: alternate_address_state
+    button: |
+      State:
+      ${ alternate_address_state }
+  - Edit: alternate_address_street
+    button: |
+      Street:
+      ${ alternate_address_street }
+  - Edit: alternate_phone
+    button: |
+      Alternate phone:
+      ${ alternate_phone }
+  - Edit: agent_exceptions
+    button: |
+      Healthcare exceptions:
+      ${ agent_exceptions }
+  - Edit: representitive_name
+    button: |
+      First name:
+      ${ representitive_name }
+  - Edit: representitive_name_middle
+    button: |
+      Middle name:
+      ${ representitive_name_middle }
+  - Edit: representitive_name_last
+    button: |
+      Last name:
+      ${ representitive_name_last }
+  - Edit: representitive_address_street
+    button: |
+      Street:
+      ${ representitive_address_street }
+  - Edit: representitive_address_city
+    button: |
+      City:
+      ${ representitive_address_city }
+  - Edit: representitive_address_state
+    button: |
+      State:
+      ${ representitive_address_state }
+  - Edit: representitive_address_zip
+    button: |
+      Zip:
+      ${ representitive_address_zip }
+  - Edit: users[0].birthdate
+    button: |
+      users[0].birthdate:
+      ${ users[0].birthdate }
+  - Edit: users[0].name.last
+    button: |
+      users[0].name.last:
+      ${ users[0].name.last }
+  - Edit: users[0].name.middle
+    button: |
+      users[0].name.middle:
+      ${ users[0].name.middle }
+  - Edit: users[0].name.suffix
+    button: |
+      users[0].name.suffix:
+      ${ users[0].name.suffix }
+  - Edit: users[0].name.first
+    button: |
+      users[0].name.first:
+      ${ users[0].name.first }
+  - Edit: users[0].address.address
+    button: |
+      users[0].address.address:
+      ${ users[0].address.address }
+  - Edit: users[0].address.city
+    button: |
+      users[0].address.city:
+      ${ users[0].address.city }
+  - Edit: users[0].address.zip
+    button: |
+      users[0].address.zip:
+      ${ users[0].address.zip }
+  - Edit: users[0].address.state
+    button: |
+      users[0].address.state:
+      ${ users[0].address.state }
+  - Edit: users[0].signature
+    button: |
+      users[0].signature:
+      ${ users[0].signature }
+  - Edit: signature_date
+    button: |
+      signature_date:
+      ${ signature_date }
+  - Edit: witnesses[1].signature
+    button: |
+      witnesses[1].signature:
+      ${ witnesses[1].signature }
+  - Edit: witnesses[0].signature
+    button: |
+      witnesses[0].signature:
+      ${ witnesses[0].signature }
+  - Edit: witnesses[1].name.first
+    button: |
+      witnesses[1].name.first:
+      ${ witnesses[1].name.first }
+  - Edit: witnesses[1].name.middle
+    button: |
+      witnesses[1].name.middle:
+      ${ witnesses[1].name.middle }
+  - Edit: witnesses[1].name.last
+    button: |
+      witnesses[1].name.last:
+      ${ witnesses[1].name.last }
+  - Edit: witnesses[1].name.suffix
+    button: |
+      witnesses[1].name.suffix:
+      ${ witnesses[1].name.suffix }
+  - Edit: witnesses[0].name.middle
+    button: |
+      witnesses[0].name.middle:
+      ${ witnesses[0].name.middle }
+  - Edit: witnesses[0].name.first
+    button: |
+      witnesses[0].name.first:
+      ${ witnesses[0].name.first }
+  - Edit: witnesses[0].name.last
+    button: |
+      witnesses[0].name.last:
+      ${ witnesses[0].name.last }
+  - Edit: witnesses[0].name.suffix
+    button: |
+      witnesses[0].name.suffix:
+      ${ witnesses[0].name.suffix }
+  - Edit: witnesses[0].address.address
+    button: |
+      witnesses[0].address.address:
+      ${ witnesses[0].address.address }
+  - Edit: witnesses[1].address.address
+    button: |
+      witnesses[1].address.address:
+      ${ witnesses[1].address.address }
+  - Edit: witnesses[0].address.city
+    button: |
+      witnesses[0].address.city:
+      ${ witnesses[0].address.city }
+  - Edit: witnesses[0].address.zip
+    button: |
+      witnesses[0].address.zip:
+      ${ witnesses[0].address.zip }
+  - Edit: witnesses[0].address.state
+    button: |
+      witnesses[0].address.state:
+      ${ witnesses[0].address.state }
+  - Edit: witnesses[1].address.zip
+    button: |
+      witnesses[1].address.zip:
+      ${ witnesses[1].address.zip }
+  - Edit: witnesses[1].address.city
+    button: |
+      witnesses[1].address.city:
+      ${ witnesses[1].address.city }
+  - Edit: witnesses[1].address.state
+    button: |
+      witnesses[1].address.state:
+      ${ witnesses[1].address.state }
+  - Edit: agent_signature
+    button: |
+      agent_signature:
+      ${ agent_signature }
+  - Edit: alternate_signature
+    button: |
+      alternate_signature:
+      ${ alternate_signature }
