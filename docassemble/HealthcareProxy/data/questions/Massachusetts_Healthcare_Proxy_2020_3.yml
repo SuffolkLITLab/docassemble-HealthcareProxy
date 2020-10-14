@@ -1,3 +1,10 @@
+---
+objects:
+  - agent: VCIndividual
+  - user: VCIndividual
+ # - alternate: VCIndividual
+ # - representative: VCIndividual
+---
 comment: |
   The metadata section controls the tab title and saved interview title. You can delete this section if you include this YAML file in another YAML file.
 metadata:
@@ -48,9 +55,14 @@ code: |
   nav.set_section('review_Massachusetts_Healthcare_Proxy_2020')
   user_role = 'plaintiff'
   has_representative
-  agent_name_middle
-  has_alternate
-  has_exceptions
+  #representative[0].name.last
+  #representative[0].name.middle
+  #representative[0].name.suffix
+  #representative[0].name.first
+  #representative[0].address.address
+  #representative[0].address.city
+  #representative[0].address.zip
+  #representative[0].address.state
   users[0].birthdate.format()
   users[0].name.last
   users[0].name.middle
@@ -60,6 +72,15 @@ code: |
   users[0].address.city
   users[0].address.zip
   users[0].address.state
+  #agent[0].name.first
+  #agent[0].name.middle
+  #agent[0].name.last
+  #agent[0].name.suffix
+  #agent[0].address.address
+  #agent[0].address.city
+  #agent[0].address.zip
+  #agent[0].address.state
+  has_alternate
   signature_date
   witnesses[1].name.first
   witnesses[1].name.middle
@@ -82,6 +103,7 @@ code: |
   users[0].signature
   witnesses[1].signature
   witnesses[0].signature
+  representative[0].signature
   Massachusetts_Healthcare_Proxy_2020 = True
 ---
 comment: |
@@ -109,26 +131,29 @@ subquestion: |
    ${Massachusetts_Healthcare_Proxy_2020_attachment['preview']}
 ---
 id: Are you completing this form for someone other than yourself?
-continue button field: has_representative
+continue button field: Do_you_want_to_add_a_representative
 question: |
   Are you completing this form for someone other than yourself?
 subquestion: |
-  A respresentative can fill out this form and sign at the direction of someone who is physically unable to complete the form. Skip this page if you are filling this form for yourself.
+  A respresentative can fill out this form and sign at the direction of someone who is physically unable to do so. Select "No" if you are filling this form for yourself.
 fields:
   - "Is a representative filling this out for you?": has_representative
-    datatype: yesornoradio
+    datatype: yesnoradio
     required: false
   - 'First name': representitive_name
+    show if: has_representative
   - 'Middle name': representitive_name_middle
+    show if: has_representative
   - 'Last name': representitive_name_last
+    show if: has_representative
   - 'Street': representitive_address_street
+    show if: has_representative
   - 'City': representitive_address_city
+    show if: has_representative
   - 'State': representitive_address_state
+    show if: has_representative
   - 'Zip': representitive_address_zip
-    showif: has_representative
----
-objects:
-  - agent: VCIndividual
+    show if: has_representative
 ---
 id: Who would you like to name as your proxy?
 question: |
@@ -155,19 +180,27 @@ continue button field: Do_you_want_to_add_a_backup_proxy
 question: |
   Do you want to add a backup proxy?
 subquestion: |
-  You can add a "backup" proxy in the event that your first choice is unwilling or unable to make healthcare decisions on your behalf. It is highly recommended that you discuss this with your backup prior to completing this form. Skip this page if you do not want to select a back-up proxy.
+  You can add a "backup" proxy in the event that your first choice is unwilling or unable to make healthcare decisions on your behalf. It is highly recommended that you discuss this with your backup prior to completing this form. Select "No" if you do not want to select a back-up proxy.
 fields:
-  - "Is a representative filling this out for you?": has_alternate
-    datatype: yesornoradio
+  - "Do you want to select a back up proxy?": has_alternate
+    datatype: yesnoradio
     required: false
   - 'First name': alternate_name_first
+    show if: has_alternate
   - 'Middle name': alternate_name_middle
+    show if: has_alternate
   - 'Last name': alternate_name_last
+    show if: has_alternate
   - 'Suffix': alternate_name_suffix
+    show if: has_alternate
   - 'City': atlernate_address_city
+    show if: has_alternate
   - 'Zip': alternate_address_zip
+    show if: has_alternate
   - 'State': alternate_address_state
+    show if: has_alternate
   - 'Street': alternate_address_street
+    show if: has_alternate
   - 'Alternate phone': alternate_phone
     show if: has_alternate
 ---
@@ -176,10 +209,11 @@ continue button field: Is_there_anything_you_do_not_want_your_health_proxy_to_de
 question: |
   Is there anything you do not want your health proxy to decide?
 subquestion: |
-  You can limit what choices your healthcare proxy can make by adding those limits below. For example, "My healthcare proxy cannot make the decision to terminate life support unless I am brain dead." You can put any limitations you'd like. Skip this question if you have no limitations.
+  You can limit what choices your healthcare proxy can make by adding those limits below. For example, you may have religious beliefs which require the refusal of certain procedures or medications; You may decide to limit exposure to certain kinds of medications (e.g. opioids, antipsychotic medications, etc). You can put any limitations you'd like. You may also leave this question blank if you do not want to place any limits on your proxy.
 fields:
   - 'Healthcare exceptions': agent_exceptions
     input type: area
+    required: false
 ---
 progress: 100
 mandatory: True
@@ -243,14 +277,22 @@ attachment:
       - "witness2_address_zip": ${ witnesses[1].address.zip }
       - "witness2_address_city": ${ witnesses[1].address.city }
       - "witness2_address_state": ${ witnesses[1].address.state }
+      - "agent_name_middle": ${ agent[0].name.middle }
+      - "agent_name_first": ${ agent[0].name.first }
+      - "agent_name_last": ${ agent[0].name.last }
+      - "agent_name_suffix": ${ agent[0].name.suffix }
+      - "agent_address_street": ${ agent[0].address.address }
+      - "agent_address_state": ${ agent[0].address.state }
+      - "agent_address_city": ${ agent[0].address.city }
+      - "agent_address_zip": ${ agent[0].address.zip }
       - "agent_name_middle": ${ agent_name_middle }
       - "agent_name_first": ${ agent_name_first }
-      - "agent_name_last": ${ agent_name_last }
+      - "agent_name_last": ${ agent_name_last}
       - "agent_name_suffix": ${ agent_name_suffix }
       - "agent_address_street": ${ agent_address_street }
       - "agent_address_state": ${ agent_address_state }
       - "agent_address_city": ${ agent_address_city }
-      - "agent_address_zip": ${ agent_address_zip }
+      - "agent_address_zip": ${ agent_address_zip}
       - "agent_phone_work": ${ agent_phone_work }
       - "agent_email": ${ agent_email }
       - "agent_phone_home": ${ agent_phone_home }
