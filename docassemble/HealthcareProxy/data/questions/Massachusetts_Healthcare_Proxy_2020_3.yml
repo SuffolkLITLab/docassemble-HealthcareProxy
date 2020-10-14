@@ -188,23 +188,31 @@ fields:
   - "Do you want to select a back up proxy?": has_alternate
     datatype: yesnoradio
     required: false
-  - 'First name': alternate_name_first
+  - First Name: alternate.name.first
     show if: has_alternate
-  - 'Middle name': alternate_name_middle
+  - Middle Name: alternate.name.middle
+    required: False
     show if: has_alternate
-  - 'Last name': alternate_name_last
+  - Last Name: alternate.name.last
     show if: has_alternate
-  - 'Suffix': alternate_name_suffix
+  - Suffix: alternate.name.suffix
+    required: False
     show if: has_alternate
-  - 'City': atlernate_address_city
+  - Street address: alternate.address.address
+    address autocomplete: True
     show if: has_alternate
-  - 'Zip': alternate_address_zip
+  - Unit: alternate.address.unit
+    required: False
     show if: has_alternate
-  - 'State': alternate_address_state
+  - City: alternate.address.city
     show if: has_alternate
-  - 'Street': alternate_address_street
+  - State: alternate.address.state
+    default: MA   
+    code: |
+      states_list()
     show if: has_alternate
-  - 'Alternate phone': alternate_phone
+  - Zip: alternate.address.zip
+    required: False
     show if: has_alternate
 ---
 id: Is there anything you do not want your health proxy to decide?
@@ -288,14 +296,11 @@ attachment:
       - "agent_phone_work": ${ agent_phone_work }
       - "agent_email": ${ agent_email }
       - "agent_phone_home": ${ agent_phone_home }
-      - "alternate_name_first": ${ alternate_name_first }
-      - "alternate_name_middle": ${ alternate_name_middle }
-      - "alternate_name_last": ${ alternate_name_last }
-      - "alternate_name_suffix": ${ alternate_name_suffix }
-      - "atlernate_address_city": ${ atlernate_address_city }
-      - "alternate_address_zip": ${ alternate_address_zip }
-      - "alternate_address_state": ${ alternate_address_state }
-      - "alternate_address_street": ${ alternate_address_street }
+      - "alternate_name_full": ${ alternate }
+      - "atlernate_address_city": ${ alternate.address.city }
+      - "alternate_address_zip": ${ alternate.address.zip }
+      - "alternate_address_state": ${ alternate.address.state }
+      - "alternate_address_street": ${ alternate.address.address }
       - "alternate_phone": ${ alternate_phone }
       - "agent_exceptions": ${ agent_exceptions }
       - "representative_address_street": ${ representative.address.address }

@@ -43,12 +43,12 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.HealthcareProxy',
-      version='0.0.3',
+      version='0.0.4',
       description=('A docassemble extension.'),
       long_description='# docassemble.HealthcareProxy\r\n\r\nA docassemble extension.\r\n\r\n## Author\r\n\r\nmcarroll11@su.suffolk.edu\r\n\r\n',
       long_description_content_type='text/markdown',
-      author='Mike Carroll Kisha Wilson',
-      author_email='mcarroll11@su.suffolk.edu',
+      author='Mike Carroll & Kisha Wilson',
+      author_email='mcarroll11@su.suffolk.edu; kwilson5@su.suffolk.edu',
       license='The MIT License (MIT)',
       url='https://docassemble.org',
       packages=find_packages(),
