@@ -2,8 +2,8 @@
 objects:
   - agent: VCIndividual
   - user: VCIndividual
- # - alternate: VCIndividual
- # - representative: VCIndividual
+  - alternate: VCIndividual
+  - representative: VCIndividual
 ---
 comment: |
   The metadata section controls the tab title and saved interview title. You can delete this section if you include this YAML file in another YAML file.
@@ -54,33 +54,17 @@ code: |
   allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy_2020"]["allowed courts"]
   nav.set_section('review_Massachusetts_Healthcare_Proxy_2020')
   user_role = 'plaintiff'
-  has_representative
-  #representative[0].name.last
-  #representative[0].name.middle
-  #representative[0].name.suffix
-  #representative[0].name.first
-  #representative[0].address.address
-  #representative[0].address.city
-  #representative[0].address.zip
-  #representative[0].address.state
+  if has_representative:
+    representative.name.first
+    representative.address.address
   users[0].birthdate.format()
-  users[0].name.last
-  users[0].name.middle
-  users[0].name.suffix
   users[0].name.first
   users[0].address.address
-  users[0].address.city
-  users[0].address.zip
-  users[0].address.state
-  #agent[0].name.first
-  #agent[0].name.middle
-  #agent[0].name.last
-  #agent[0].name.suffix
-  #agent[0].address.address
-  #agent[0].address.city
-  #agent[0].address.zip
-  #agent[0].address.state
-  has_alternate
+  agent.name.first
+  agent.address.address
+  if has_alternate:  
+    alternate.name.first
+    alternate.address.address
   signature_date
   witnesses[1].name.first
   witnesses[1].name.middle
@@ -133,26 +117,38 @@ subquestion: |
 id: Are you completing this form for someone other than yourself?
 continue button field: Do_you_want_to_add_a_representative
 question: |
-  Are you completing this form for someone other than yourself?
+  Are you completing this form for yourself or someone else?
 subquestion: |
   A respresentative can fill out this form and sign at the direction of someone who is physically unable to do so. Select "No" if you are filling this form for yourself.
 fields:
   - "Is a representative filling this out for you?": has_representative
     datatype: yesnoradio
     required: false
-  - 'First name': representitive_name
+  - First Name: representative.name.first
     show if: has_representative
-  - 'Middle name': representitive_name_middle
+  - Middle Name: representative.name.middle
+    required: False
     show if: has_representative
-  - 'Last name': representitive_name_last
+  - Last Name: representative.name.last
     show if: has_representative
-  - 'Street': representitive_address_street
+  - Suffix: representative.name.suffix
+    required: False
     show if: has_representative
-  - 'City': representitive_address_city
+  - Street address: representative.address.address
+    address autocomplete: True
     show if: has_representative
-  - 'State': representitive_address_state
+  - Unit: representative.address.unit
+    required: False
     show if: has_representative
-  - 'Zip': representitive_address_zip
+  - City: representative.address.city
+    show if: has_representative
+  - State: representative.address.state
+    default: MA   
+    code: |
+      states_list()
+    show if: has_representative
+  - Zip: representative.address.zip
+    required: False
     show if: has_representative
 ---
 id: Who would you like to name as your proxy?
@@ -161,19 +157,26 @@ question: |
 subquestion: |
   You can name someone you trust to make your healthcare decisions if you are not able to make them by adding their details below.
 fields:
-  - Address: agent.address.address
-    address autocomplete: True
-  - Unit: agent.address.unit
-    required: False
-  - City: agent.address.city
-  - State: agent.address.state
-    default: MA
-    code: |
-      states_list()
-  - Zip: agent.address.zip
-  - 'Mobile phone': agent_phone_work
-  - 'E-mail': agent_email
-  - 'Home phone': agent_phone_home
+ - First Name: agent.name.first
+ - Middle Name: agent.name.middle
+   required: False
+ - Last Name: agent.name.last
+ - Suffix: agent.name.suffix
+   required: False
+ - Street address: agent.address.address
+   address autocomplete: True
+ - Unit: agent.address.unit
+   required: False
+ - City: agent.address.city
+ - State: agent.address.state
+   default: MA   
+   code: |
+     states_list()
+ - Zip: agent.address.zip
+   required: False
+ - 'Mobile phone': agent_phone_work
+ - 'E-mail': agent_email
+ - 'Home phone': agent_phone_home
 ---
 id: Do you want to add a backup proxy?
 continue button field: Do_you_want_to_add_a_backup_proxy
@@ -277,22 +280,11 @@ attachment:
       - "witness2_address_zip": ${ witnesses[1].address.zip }
       - "witness2_address_city": ${ witnesses[1].address.city }
       - "witness2_address_state": ${ witnesses[1].address.state }
-      - "agent_name_middle": ${ agent[0].name.middle }
-      - "agent_name_first": ${ agent[0].name.first }
-      - "agent_name_last": ${ agent[0].name.last }
-      - "agent_name_suffix": ${ agent[0].name.suffix }
-      - "agent_address_street": ${ agent[0].address.address }
-      - "agent_address_state": ${ agent[0].address.state }
-      - "agent_address_city": ${ agent[0].address.city }
-      - "agent_address_zip": ${ agent[0].address.zip }
-      - "agent_name_middle": ${ agent_name_middle }
-      - "agent_name_first": ${ agent_name_first }
-      - "agent_name_last": ${ agent_name_last}
-      - "agent_name_suffix": ${ agent_name_suffix }
-      - "agent_address_street": ${ agent_address_street }
-      - "agent_address_state": ${ agent_address_state }
-      - "agent_address_city": ${ agent_address_city }
-      - "agent_address_zip": ${ agent_address_zip}
+      - "agent_name_full": ${ agent }
+      - "agent_address_street": ${ agent.address.address }
+      - "agent_address_state": ${ agent.address.state }
+      - "agent_address_city": ${ agent.address.city }
+      - "agent_address_zip": ${ agent.address.zip }
       - "agent_phone_work": ${ agent_phone_work }
       - "agent_email": ${ agent_email }
       - "agent_phone_home": ${ agent_phone_home }
@@ -306,13 +298,11 @@ attachment:
       - "alternate_address_street": ${ alternate_address_street }
       - "alternate_phone": ${ alternate_phone }
       - "agent_exceptions": ${ agent_exceptions }
-      - "representitive_address_street": ${ representitive_address_street }
-      - "representitive_name_last": ${ representitive_name_last }
-      - "representitive_name_middle": ${ representitive_name_middle }
-      - "representitive_name": ${ representitive_name }
-      - "representitive_address_city": ${ representitive_address_city }
-      - "representitive_address_state": ${ representitive_address_state }
-      - "representitive_address_zip": ${ representitive_address_zip }
+      - "representative_address_street": ${ representative.address.address }
+      - "representative_name_full": ${ representative }
+      - "representative_address_city": ${ representative.address.city }
+      - "representative_address_state": ${ representative.address.state }
+      - "representative_address_zip": ${ representative.address.zip}
       - "agent_signature": ${ agent_signature }
       - "alternate_signature": ${ alternate_signature }
 ---
