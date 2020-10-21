@@ -87,7 +87,7 @@ code: |
   users[0].signature
   witnesses[1].signature
   witnesses[0].signature
-  representative[0].signature
+  representative.signature
   Massachusetts_Healthcare_Proxy_2020 = True
 ---
 comment: |
