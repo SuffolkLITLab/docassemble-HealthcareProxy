@@ -57,11 +57,13 @@ code: |
   if has_representative:
     representative.name.first
     representative.address.address
-  users[0].birthdate.format()
+  users[0].birthdate.format('%m/%d/%Y')
   users[0].name.first
   users[0].address.address
   agent.name.first
   agent.address.address
+  if has_exceptions:
+    agent_exceptions
   if has_alternate:  
     alternate.name.first
     alternate.address.address
@@ -222,9 +224,13 @@ question: |
 subquestion: |
   You can limit what choices your healthcare proxy can make by adding those limits below. For example, you may have religious beliefs which require the refusal of certain procedures or medications; You may decide to limit exposure to certain kinds of medications (e.g. opioids, antipsychotic medications, etc). You can put any limitations you'd like. You may also leave this question blank if you do not want to place any limits on your proxy.
 fields:
+  - "Do you have any exceptions?": has_exceptions
+    datatype: yesnoradio
+    required: false
   - 'Healthcare exceptions': agent_exceptions
     input type: area
     required: false
+    show if: has_exceptions
 ---
 progress: 100
 mandatory: True
