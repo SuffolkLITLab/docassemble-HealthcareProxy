@@ -240,6 +240,8 @@ fields:
     required: false
   - 'Healthcare exceptions': agent_exceptions
     input type: area
+    rows: 2
+    maxlength: 170
     required: false
     show if: has_exceptions
 ---
@@ -272,19 +274,20 @@ attachment:
     skip undefined: True
     pdf template file: Massachusetts_Healthcare_Proxy_2020.pdf
     fields: 
-      - "user_birthdate": ${ users[0].birthdate.format() }
+      - "user_birthdate": ${ users[0].birthdate.format('MM/dd/yyyy') }
       - "user_name_last": ${ users[0].name.last }
       - "user_name_middle": ${ users[0].name.middle }
       - "user_name_suffix": ${ users[0].name.suffix }
       - "user_name_first": ${ users[0].name.first }
+      - "user_name_full": ${users }
       - "user_address_street": ${ users[0].address.address }
       - "user_address_city": ${ users[0].address.city }
       - "user_address_zip": ${ users[0].address.zip }
       - "user_address_state": ${ users[0].address.state }
       # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
       - "user_signature": ${ users[0].signature if i == 'final' else '' }
-      - "signature_date": ${ signature_date }
-      - "signature_date__1": ${ signature_date }
+      - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
+      - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
       # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
       - "witness2_signature": ${ witnesses[1].signature if i == 'final' else '' }
       # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
@@ -320,7 +323,7 @@ attachment:
       - "alternate_address_state": ${ alternate.address.state }
       - "alternate_address_street": ${ alternate.address.address }
       - "alternate_phone": ${ alternate_phone }
-      - "agent_exceptions": ${ agent_exceptions }
+      - "agent_exceptions": ${ single_paragraph(agent_exceptions) }
       - "representative_address_street": ${ representative.address.address }
       - "representative_name_full": ${ representative }
       - "representative_address_city": ${ representative.address.city }
