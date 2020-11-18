@@ -57,7 +57,7 @@ code: |
   if has_representative:
     representative.name.first
     representative.address.address
-  users[0].birthdate.format('%m/%d/%Y')
+  users[0].birthdate.format()
   users[0].name.first
   users[0].address.address
   agent.name.first
@@ -89,7 +89,13 @@ code: |
   users[0].signature
   witnesses[1].signature
   witnesses[0].signature
-  representative[0].signature
+  if has_representative:
+    representative[0].signature
+  if agent_present:
+    agent.signature
+  if has_alternate:  
+    alternate[0].signature
+  
   Massachusetts_Healthcare_Proxy_2020 = True
 ---
 comment: |
@@ -178,7 +184,12 @@ fields:
    required: False
  - 'Mobile phone': agent_phone_work
  - 'E-mail': agent_email
+   required: False
  - 'Home phone': agent_phone_home
+   required: False
+ - "Is your agent present to sign this form?": agent_present
+   datatype: yesnoradio
+   required: false
 ---
 id: Do you want to add a backup proxy?
 continue button field: Do_you_want_to_add_a_backup_proxy
@@ -302,6 +313,7 @@ attachment:
       - "agent_phone_work": ${ agent_phone_work }
       - "agent_email": ${ agent_email }
       - "agent_phone_home": ${ agent_phone_home }
+      - "agent_signature": ${ agent.signature if i == 'final' else '' }
       - "alternate_name_full": ${ alternate }
       - "atlernate_address_city": ${ alternate.address.city }
       - "alternate_address_zip": ${ alternate.address.zip }
