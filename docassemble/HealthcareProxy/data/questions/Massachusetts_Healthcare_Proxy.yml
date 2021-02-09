@@ -45,15 +45,26 @@ code: |
   Massachusetts_Healthcare_Proxy_intro
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy"]["allowed courts"]
-  nav.set_section('review_Massachusetts_Healthcare_Proxy')
   user_role = 'plaintiff'
-  principal.name.first
-  principal.address.address
-  principal.birthdate
-  agent_name
-  has_exceptions
+  users[0].name.first
+  users[0].name.middle
+  users[0].name.last
+  users[0].name.suffix
+  users[0].address.address
+  users[0].birthdate
   has_representative
-  signature_date
+  has_exceptions
+  if has_representative:
+    representatives[0].name.first
+    representatives[0].address.address
+  else: 
+    agents[0].name.first
+  agents[0].name.last
+  agents[0].address.address
+  if has_alternate:
+    alternates[0].address.address
+  else: witnesses[0].name.first
+  signature_date = False
   str(witnesses[1])
   str(witnesses[0])
   witnesses[0].address.address
@@ -65,10 +76,11 @@ code: |
   witnesses[1].address.city
   witnesses[1].address.state
   Massachusetts_Healthcare_Proxy_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  witnesses[1].signature
-  witnesses[0].signature
+  basic_questions_signature_flow = False 
+  witnesses[1].signature = False 
+  witnesses[0].signature = False 
   Massachusetts_Healthcare_Proxy = True
+  nav.set_section('review_Massachusetts_Healthcare_Proxy')
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -91,42 +103,85 @@ subquestion: |
    ${Massachusetts_Healthcare_Proxy_attachment['preview']}
 ---
 objects:
-  - principal: VCIndividual
+  - user: VCIndividual
+  - agents: PeopleList
+  - alternates: PeopleList
+  - representatives: PeopleList
 ---
 id: Tell us about yourself.
 question: |
   Tell us about yourself.
 subquestion: |
-  Please enter your information in the fields below.|
+  Please enter your information in the fields below.
 fields:
-  - Address: principal.address.address
-    address autocomplete: True
-  - Unit: principal.address.unit
+  - First Name: users[0].name.first
+  - Middle Name: users[0].name.middle
     required: False
-    help: The apartment, suite, or unit number of the residence.
-  - City: principal.address.city
-  - State: principal.address.state
-    default: MA
+  - Last Name: users[0].name.last
+  - Suffix: users[0].name.suffix
     code: |
-      states_list()
-  - Zip: principal.address.zip
+      name_suffix()
     required: False
 ---
+id: Birth Date
+question: |
+  What is your date of birth?
+fields:
+  - Birthdate: users[0].birthdate
+    datatype: date
+---
+id: your address
+question: |
+  What is your address?
+subquestion: |
+  Use the address where you currently recieve mall.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip
+    required: False
+progress: 20
+---
 id: Tell us about your healthcare proxy.
+generic object: Individual
 question: |
   Tell us about your healthcare proxy.
 subquestion: |
   Your healthcare proxy is the person that you are selecting to make your healthcare decisions on your behalf if you are unable to. Provide the information of the person you have elected to designate as your Agent.
 fields:
-  - 'Healthcare proxy full name (ex: John Doe)': agent_name
-  - 'Permanent address': agent_address_street
-  - 'City': agent_address_city
-  - 'State': agent_address_state
-  - 'Zipcode': agent_address_zip
-  - 'Mobile Number (ex: 1-555-555-1212)': agent_phone_home
-  - 'Work Number (ex: 1-555-555-1212)': agent_phone_work
+  - First Name: agents[0].name.first
+  - Middle Name: agents[0].name.middle
+    required: False
+  - Last Name: agents[0].name.last
+  - Suffix: agents[0].name.suffix
+    required: False
+---
+id: Healthcare proxy contact info
+question: |
+  Provide ${ agents[0].name.first }'s contact information.
+fields:
+  - Street Address: agents[0].address.address
+    address autocomplete: True
+  - Unit: agents[0].address.unit
+    required: False
+    help: The apartment, suite, or unit number of the residence.
+  - City: agents[0].address.city
+  - State: agents[0].address.state
+    code: |
+      states_list()
+    default: MA
+  - Zip: agents[0].address.zip
+  - Mobile Number: agent_phone_home
+  - Work Number: agent_phone_work
     required: false
-  - 'E-mail (ex: johndoe@healthcare.com)': agent_email
+  - E-mail: agent_email
     required: false
 ---
 id: Do you have an alternate healthcare proxy?
@@ -139,18 +194,33 @@ fields:
   - "Would you like to designate an alternate healthcare proxy?": has_alternate
     datatype: yesnoradio
     required: false
-  - 'Full name (ex: John Smith)': alternate_name
+  - "First Name":  alternates[0].name.first 
     show if: has_alternate
-  - 'City': atlernate_address_city
+  - "Middle Name":  alternates[0].name.middle 
     show if: has_alternate
-  - 'Zipcode': alternate_address_zip
+    required: False
+  - "Last Name":  alternates[0].name.last 
     show if: has_alternate
-  - 'State': alternate_address_state
+  - "Suffix":  alternates[0].name.suffix 
     show if: has_alternate
-  - 'Address': alternate_address_street
-    show if: has_alternate
-  - 'Phone number (ex: 1-555-1212)': alternate_phone
-    show if: has_alternate
+    required: False
+---
+id: Alt. Address
+question: |
+  Provide ${ alternates[0].name.first }'s contact information
+fields:
+  - Street Address: alternates[0].address.address
+    address autocomplete: True
+  - Unit: alternates[0].address.unit
+    required: False
+    help: The apartment, suite, or unit number of the residence.
+  - City: alternates[0].address.city
+  - State: alternates[0].address.state
+    code: |
+      states_list()
+    default: MA
+  - Zip: alternates[0].address.zip
+  - Phone number: alternate_phone
 ---
 id: exceptions
 question: |
@@ -174,16 +244,28 @@ subquestion: |
 fields:
   - "Do you have a representative?": has_representative
     datatype: yesnoradio
-  - 'Permanent Address': representitive_address_street
+  - First Name: representatives[0].name.first
+    required: False
     show if: has_representative
-  - 'Full name (ex: Judy Dane)': representitive_name
-    show if: has_representative 
-  - 'City': representitive_address_city
-    show if: has_representative 
-  - 'State': representitive_address_state
-    show if: has_representative 
-  - 'Zipcode': representitive_address_zip
-    show if: has_representative 
+  - Last Name: representatives[0].name.last
+    required: False
+    show if: has_representative
+---
+id: Alt. Address
+question: |
+  Provide ${ representatives[0].name.first }'s contact information
+fields:
+  - Street Address: representatives[0].address.address
+    address autocomplete: True
+  - Unit: representatives[0].address.unit
+    required: False
+    help: The apartment, suite, or unit number of the residence.
+  - City: representatives[0].address.city
+  - State: representatives[0].address.state
+    code: |
+      states_list()
+    default: MA
+  - Zip: representatives[0].address.zip
 ---
 question: |
   Sign your name
@@ -229,8 +311,14 @@ attachment:
       - "witness2_signature": ${ witnesses[1].signature if i == 'final' else '' }
       # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
       - "witness1_signature": ${ witnesses[0].signature if i == 'final' else '' }
-      - "witness2_name": ${ str(witnesses[1]) }
-      - "witness1_name": ${ str(witnesses[0]) }
+      - "witness2_name_first": ${ witnesses[1].name.first }
+      - "witness2_name_middle": ${ witnesses[1].name.middle }
+      - "witness2_name_last": ${ witnesses[1].name.last }
+      - "witness1_name_suffix": ${ witnesses[1].name.suffix }
+      - "witness1_name_first": ${ witnesses[0].name.first }
+      - "witness1_name_middle": ${ witnesses[0].name.middle }
+      - "witness1_name_last": ${ witnesses[0].name.last }
+      - "witness1_name_suffix": ${ witnesses[0].name.suffix }
       - "witness1_address_street": ${ witnesses[0].address.address }
       - "witness2_address_street": ${ witnesses[1].address.address }
       - "witness1_address_city": ${ witnesses[0].address.city }
@@ -239,35 +327,42 @@ attachment:
       - "witness2_address_zip": ${ witnesses[1].address.zip }
       - "witness2_address_city": ${ witnesses[1].address.city }
       - "witness2_address_state": ${ witnesses[1].address.state }
-      - "principal_birthdate": ${ principal_birthdate }
-      - "principal_name": ${ principal_name }
-      - "principal_address_street": ${ principal_address_street }
-      - "principal_address_city": ${ principal_address_city }
-      - "principal_address_zip": ${ principal_address_zip }
-      - "principal_address_state": ${ principal_address_state }
-      - "agent_name": ${ agent_name }
-      - "agent_address_street": ${ agent_address_street }
-      - "agent_address_state": ${ agent_address_state }
-      - "agent_address_city": ${ agent_address_city }
-      - "agent_address_zip": ${ agent_address_zip }
+      - "users0_birthdate": ${ users[0].birthdate }
+      - "users0_name_first": ${ users[0].name.first }
+      - "users0_name_middle": ${ users[0].name.middle }
+      - "users0_name_last": ${ users[0].name.last }
+      - "users0_name_suffix": ${ users[0].name.suffix }
+      - "users0_address_address": ${ users[0].address.address }
+      - "users0_address_city": ${ users[0].address.city }
+      - "users0_address_zip": ${ users[0].address.zip }
+      - "users0_address_state": ${ users[0].address.state }
+      - "agents0_name_first": ${ agents[0].name.first }
+      - "agents0_name_middle": ${ agents[0].name.middle }
+      - "agents0_name_last": ${ agents[0].name.last }
+      - "agents0_name_suffix": ${ agents[0].name.suffix }
+      - "agents0_address_address": ${ agents[0].address.address }
+      - "agents0_address_state": ${ agents[0].address.state }
+      - "agents0_address_city": ${ agents[0].address.city }
+      - "agents0_address_zip": ${ agents[0].address.zip }
       - "agent_phone_work": ${ agent_phone_work }
       - "agent_email": ${ agent_email }
       - "agent_phone_home": ${ agent_phone_home }
-      - "alternate_name": ${ alternate_name }
-      - "atlernate_address_city": ${ atlernate_address_city }
-      - "alternate_address_zip": ${ alternate_address_zip }
-      - "alternate_address_state": ${ alternate_address_state }
-      - "alternate_address_street": ${ alternate_address_street }
+      - "alternates0_name_first": ${ alternates[0].name.first }
+      - "alternates0_name_middle": ${ alternates[0].name.middle }
+      - "alternates0_name_last": ${ alternates[0].name.last }
+      - "alternates0_name_suffix": ${ alternates[0].name.suffix }
+      - "atlernates0_address_address": ${ alternates[0].address.address }
+      - "alternates0_address_zip": ${ alternates[0].address.zip }
+      - "alternates0_address_state": ${ alternates[0].address.state }
+      - "alternates0_address_city": ${ alternates[0].address.city }
       - "alternate_phone": ${ alternate_phone }
       - "agent_exceptions": ${ agent_exceptions }
-      - "representitive_address_street": ${ representitive_address_street }
-      - "representitive_name": ${ representitive_name }
-      - "representitive_address_city": ${ representitive_address_city }
-      - "representitive_address_state": ${ representitive_address_state }
-      - "representitive_address_zip": ${ representitive_address_zip }
-      - "principal_signature": ${ principal_signature }
-      - "agent_signature": ${ agent_signature }
-      - "alternate_signature": ${ alternate_signature }
+      - "representatives0_name_first": ${ representatives[0].name.first }
+      - "representatives0_name_last": ${ representatives[0].name.last }
+      - "representitives0_address_address": ${ representatives[0].address.address }
+      - "representitives0_address_city": ${ representatives[0].address.city }
+      - "representitives0_address_state": ${ representatives[0].address.state }
+      - "representitives0_address_zip": ${ representatives[0].address.zip }
 ---
 id: Massachusetts_Healthcare_Proxy review screen
 event: review_Massachusetts_Healthcare_Proxy
