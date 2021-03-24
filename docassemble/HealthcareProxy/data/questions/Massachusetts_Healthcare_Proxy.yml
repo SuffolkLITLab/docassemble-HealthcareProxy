@@ -41,7 +41,7 @@ id: interview_order_Massachusetts_Healthcare_Proxy
 code: |
   # This is a placeholder to control logic flow in this interview
 
-  basic_questions_intro_screen
+  proxy_questions_intro_screen
   Massachusetts_Healthcare_Proxy_intro
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy"]["allowed courts"]
@@ -57,7 +57,7 @@ code: |
   if has_representative:
     representatives[0].name.first
     representatives[0].address.address
-  else: 
+  else:
     agents[0].name.first
   agents[0].name.last
   agents[0].address.address
@@ -75,12 +75,42 @@ code: |
   witnesses[1].address.zip
   witnesses[1].address.city
   witnesses[1].address.state
-  Massachusetts_Healthcare_Proxy_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow = False 
-  witnesses[1].signature = False 
-  witnesses[0].signature = False 
+  Massachusetts_Healthcare_Proxy_preview_question
+  basic_questions_signature_flow = False
+  witnesses[1].signature = False
+  witnesses[0].signature = False
   Massachusetts_Healthcare_Proxy = True
   nav.set_section('review_Massachusetts_Healthcare_Proxy')
+---
+id: intro screen
+decoration: form-lineal
+question: |
+  Designate your Health Care Proxy using this interview!
+subquestion: |
+  The MassAccess Project can help **Massachusetts residents** complete and submit forms in 3 steps:
+
+  Step 1. Answer questions that will fill in your form for you.
+
+  Step 2. Preview the completed form.
+
+  Step 3. Download and print the final form. You will need to deliver it to the hospital on your own.
+
+  Tap the {green words} in any screen for a definition or more information.
+
+fields:
+  - To continue, you must accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.
+continue button field: proxy_questions_intro_screen
+terms:
+  green words: |
+    Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -89,18 +119,24 @@ continue button field: Massachusetts_Healthcare_Proxy_intro
 question: |
   Massachusetts Healthcare Proxy Form
 subquestion: |
-  This form allows you to designate someone to make healthcare decisions for you if for any reason you become unable to make or communicate your own healthcare decisions. The form will take approximately 20 minutes to complete and will require that two witnesses are present to sign. 
-  
-  For more information about the Massachusetts Health Care Proxy please visit https://masshealthdecisions.org/health-care-proxy/.
+  You can use this form to name someone you trust to make healthcare decisions on your behalf in the event that you are unable to make healthcare decisions for yourself.
+
+   It is highly recommended that you discuss your healthcare choices with the person you name prior to completing this form.  If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.
+
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/igZIJ6pGerk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+progress: 10
 ---
-id: Placeholder preview screen
+id: Preview screen
 continue button field: Massachusetts_Healthcare_Proxy_preview_question
 question: |
-  Placeholder preview screen
+  Health Care Proxy Form Preview
 subquestion: |
-  Here is a preview of the form you'll sign on the next page.
+  Here is a preview of your form.
+
+  You may click the file to review your answers. You can use the back button to navigate to previous screens to correct mistakes.
 
    ${Massachusetts_Healthcare_Proxy_attachment['preview']}
+progress: 90
 ---
 objects:
   - user: VCIndividual
@@ -129,6 +165,7 @@ question: |
 fields:
   - Birthdate: users[0].birthdate
     datatype: date
+progress: 20
 ---
 id: your address
 question: |
@@ -144,10 +181,10 @@ fields:
   - State: users[0].address.state
     code: |
       states_list()
-    default: MA      
+    default: MA
   - Zip: users[0].address.zip
     required: False
-progress: 20
+progress: 15
 ---
 id: Tell us about your healthcare proxy.
 generic object: Individual
@@ -160,8 +197,6 @@ fields:
   - Middle Name: agents[0].name.middle
     required: False
   - Last Name: agents[0].name.last
-  - Suffix: agents[0].name.suffix
-    required: False
 ---
 id: Healthcare proxy contact info
 question: |
@@ -183,6 +218,7 @@ fields:
     required: false
   - E-mail: agent_email
     required: false
+progress: 50
 ---
 id: Do you have an alternate healthcare proxy?
 continue button field: Do_you_have_an_alternate_healthcare_proxy
@@ -194,16 +230,11 @@ fields:
   - "Would you like to designate an alternate healthcare proxy?": has_alternate
     datatype: yesnoradio
     required: false
-  - "First Name":  alternates[0].name.first 
+  - "First Name":  alternates[0].name.first
     show if: has_alternate
-  - "Middle Name":  alternates[0].name.middle 
+  - "Last Name":  alternates[0].name.last
     show if: has_alternate
-    required: False
-  - "Last Name":  alternates[0].name.last 
-    show if: has_alternate
-  - "Suffix":  alternates[0].name.suffix 
-    show if: has_alternate
-    required: False
+progress: 65
 ---
 id: Alt. Address
 question: |
@@ -266,6 +297,7 @@ fields:
       states_list()
     default: MA
   - Zip: representatives[0].address.zip
+progress: 35
 ---
 question: |
   Sign your name
@@ -278,18 +310,15 @@ under: |
 ---
 progress: 100
 mandatory: True
-id: Placeholder download screen
+id: Download screen
 question: |
-  Placeholder download screen
+  Your Form is Complete!
 subquestion: |
-  Placeholder
-
+  You may file this form with a hospital to designate your Health Care Proxy.
   ### Next steps
-
-  1. Step 1
-  1. Step 2
-
-  Below is a preview of your form.
+  1. Click on the image to review your form for accuracy. You can use the back button to navigate to previous screens to correct mistakes.
+  2. Once you have reviewed your form, you can download it to your computer to print it, or email somewhere, using the window below.
+  3. Print your form out and sign it. **NOTE:** This form must be signed in the presence of two (2) witnesses.
 
   ${Massachusetts_Healthcare_Proxy_attachment['final'] }
 need: Massachusetts_Healthcare_Proxy
@@ -315,10 +344,12 @@ attachment:
       - "witness2_name_middle": ${ witnesses[1].name.middle }
       - "witness2_name_last": ${ witnesses[1].name.last }
       - "witness1_name_suffix": ${ witnesses[1].name.suffix }
+      - "witness2_name_full": ${ str(witness2[0]) }
       - "witness1_name_first": ${ witnesses[0].name.first }
       - "witness1_name_middle": ${ witnesses[0].name.middle }
       - "witness1_name_last": ${ witnesses[0].name.last }
       - "witness1_name_suffix": ${ witnesses[0].name.suffix }
+      - "witness1_name_full": ${ str(witness1[0]) }
       - "witness1_address_street": ${ witnesses[0].address.address }
       - "witness2_address_street": ${ witnesses[1].address.address }
       - "witness1_address_city": ${ witnesses[0].address.city }
@@ -332,6 +363,7 @@ attachment:
       - "users0_name_middle": ${ users[0].name.middle }
       - "users0_name_last": ${ users[0].name.last }
       - "users0_name_suffix": ${ users[0].name.suffix }
+      - "users0_name_full": ${ str(users[0]) }
       - "users0_address_address": ${ users[0].address.address }
       - "users0_address_city": ${ users[0].address.city }
       - "users0_address_zip": ${ users[0].address.zip }
@@ -340,6 +372,7 @@ attachment:
       - "agents0_name_middle": ${ agents[0].name.middle }
       - "agents0_name_last": ${ agents[0].name.last }
       - "agents0_name_suffix": ${ agents[0].name.suffix }
+      - "agents0_name_full": ${ str(agents[0]) }
       - "agents0_address_address": ${ agents[0].address.address }
       - "agents0_address_state": ${ agents[0].address.state }
       - "agents0_address_city": ${ agents[0].address.city }
@@ -351,7 +384,8 @@ attachment:
       - "alternates0_name_middle": ${ alternates[0].name.middle }
       - "alternates0_name_last": ${ alternates[0].name.last }
       - "alternates0_name_suffix": ${ alternates[0].name.suffix }
-      - "atlernates0_address_address": ${ alternates[0].address.address }
+      - "alternates0_name_full": ${ str(alternates0[0]) }
+      - "alternates0_address_address": ${ alternates[0].address.address }
       - "alternates0_address_zip": ${ alternates[0].address.zip }
       - "alternates0_address_state": ${ alternates[0].address.state }
       - "alternates0_address_city": ${ alternates[0].address.city }
@@ -359,10 +393,11 @@ attachment:
       - "agent_exceptions": ${ agent_exceptions }
       - "representatives0_name_first": ${ representatives[0].name.first }
       - "representatives0_name_last": ${ representatives[0].name.last }
-      - "representitives0_address_address": ${ representatives[0].address.address }
-      - "representitives0_address_city": ${ representatives[0].address.city }
-      - "representitives0_address_state": ${ representatives[0].address.state }
-      - "representitives0_address_zip": ${ representatives[0].address.zip }
+      - "representatives0_name_full": ${ str(representatives0[0]) }
+      - "representatives0_address_address": ${ representatives[0].address.address }
+      - "representatives0_address_city": ${ representatives[0].address.city }
+      - "representatives0_address_state": ${ representatives[0].address.state }
+      - "representatives0_address_zip": ${ representatives[0].address.zip }
 ---
 id: Massachusetts_Healthcare_Proxy review screen
 event: review_Massachusetts_Healthcare_Proxy
