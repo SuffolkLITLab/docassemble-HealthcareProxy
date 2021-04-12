@@ -112,18 +112,14 @@ terms:
   green words: |
     Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
 ---
-comment: |
-  This question is used to introduce your interview. Please customize
 id: Massachusetts Healthcare Proxy Form
 continue button field: Massachusetts_Healthcare_Proxy_intro
 question: |
   Massachusetts Healthcare Proxy Form
 subquestion: |
-  You can use this form to name someone you trust to make healthcare decisions on your behalf in the event that you are unable to make healthcare decisions for yourself.
-
-   It is highly recommended that you discuss your healthcare choices with the person you name prior to completing this form.  If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.
-
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/igZIJ6pGerk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  You can use this form to name someone you trust to make healthcare decisions on your behalf. 
+  
+  **It is highly recommended that you discuss your healthcare choices with your Healthcare Proxy prior to completing this form. If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.** 
 progress: 10
 ---
 id: Preview screen
@@ -314,11 +310,16 @@ id: Download screen
 question: |
   Your Form is Complete!
 subquestion: |
-  You may file this form with a hospital to designate your Health Care Proxy.
+  Your Health Care Proxy form is ready to download. You will need to print it, sign it in the presence of two witnesses and file it with your health care provider.
+  
   ### Next steps
-  1. Click on the image to review your form for accuracy. You can use the back button to navigate to previous screens to correct mistakes.
-  2. Once you have reviewed your form, you can download it to your computer to print it, or email somewhere, using the window below.
-  3. Print your form out and sign it. **NOTE:** This form must be signed in the presence of two (2) witnesses.
+  
+  1. Download the form.
+  2. Sign it in the presence of two witness
+  3. File it with your health care provider
+  4. Make sure to keep a copy for yourself
+  
+  Below is a preview of your form.
 
   ${Massachusetts_Healthcare_Proxy_attachment['final'] }
 need: Massachusetts_Healthcare_Proxy
