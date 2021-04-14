@@ -16,7 +16,7 @@ code: |
   interview_metadata['Massachusetts_Healthcare_Proxy'].update({
     'title': 'Massachusetts Healthcare Proxy Form',
     'short title': 'Healthcare Proxy',
-    'description': 'This form can be used to designate someone to make healthcare decision on your behalf if you are unable to do so.',
+    'description': 'This form can be used to designate someone to make healthcare decisions on your behalf if you are unable to do so.',
     'original_form': '',
     'allowed courts': [
     ],
@@ -45,6 +45,8 @@ code: |
   Massachusetts_Healthcare_Proxy_intro
   # Set the allowed courts for this interview
   allowed_courts = interview_metadata["Massachusetts_Healthcare_Proxy"]["allowed courts"]
+  warning_screen
+  has_representative
   user_role = 'plaintiff'
   users[0].name.first
   users[0].name.middle
@@ -52,7 +54,6 @@ code: |
   users[0].name.suffix
   users[0].address.address
   users[0].birthdate
-  has_representative
   has_exceptions
   if has_representative:
     representatives[0].name.first
@@ -63,29 +64,16 @@ code: |
   agents[0].address.address
   if has_alternate:
     alternates[0].address.address
-  else: witnesses[0].name.first
-  signature_date = False
-  str(witnesses[1])
-  str(witnesses[0])
-  witnesses[0].address.address
-  witnesses[1].address.address
-  witnesses[0].address.city
-  witnesses[0].address.zip
-  witnesses[0].address.state
-  witnesses[1].address.zip
-  witnesses[1].address.city
-  witnesses[1].address.state
-  Massachusetts_Healthcare_Proxy_preview_question
+  else:
+    Massachusetts_Healthcare_Proxy = True
   basic_questions_signature_flow = False
-  witnesses[1].signature = False
-  witnesses[0].signature = False
   Massachusetts_Healthcare_Proxy = True
   nav.set_section('review_Massachusetts_Healthcare_Proxy')
 ---
 id: intro screen
 decoration: form-lineal
 question: |
-  Designate your Health Care Proxy using this interview!
+  Designate your Health Care Agent using this interview.
 subquestion: |
   The MassAccess Project can help **Massachusetts residents** complete and submit forms in 3 steps:
 
@@ -93,7 +81,7 @@ subquestion: |
 
   Step 2. Preview the completed form.
 
-  Step 3. Download and print the final form. You will need to deliver it to the hospital on your own.
+  Step 3. Download and print the final form. You will need to sign it in the presence of two witnesses and deliver it your healthcare provider.
 
   Tap the {green words} in any screen for a definition or more information.
 
@@ -112,14 +100,24 @@ terms:
   green words: |
     Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
 ---
+continue button field: warning_screen
+question: |
+  Warning!
+subquestion: |
+  **You must be 18 years or older to complete this form and you must complete this form of your own free will.**
+  
+  This form is intended for residents of **Massachusetts**. Please look up the Healthcare Proxy rules in other states if you wish to determine whether the form will be valid in other states.
+---
 id: Massachusetts Healthcare Proxy Form
 continue button field: Massachusetts_Healthcare_Proxy_intro
 question: |
   Massachusetts Healthcare Proxy Form
 subquestion: |
-  You can use this form to name someone you trust to make healthcare decisions on your behalf. 
+  You can use this form to name someone you trust to make healthcare decisions on your behalf if you lose the ability to do so for yourself. This person is called a Healthcare Agent.
   
-  **It is highly recommended that you discuss your healthcare choices with your Healthcare Proxy prior to completing this form. If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.** 
+  **It is highly recommended that you discuss your healthcare choices with your Healthcare Agent prior to completing this form. If you need additional resources please talk to your doctor or visit resources like masshealthdecisions.org.**
+  
+  You may revoke a healthcare proxy at any time by letting your healthcare agent or a health care provider know orally or in writing or by any other act evidencing a specific intent to revoke the proxy.
 progress: 10
 ---
 id: Preview screen
@@ -140,11 +138,11 @@ objects:
   - alternates: PeopleList
   - representatives: PeopleList
 ---
-id: Tell us about yourself.
+id: Tell us about the principal
 question: |
-  Tell us about yourself.
+  Tell us about the Principal.
 subquestion: |
-  Please enter your information in the fields below.
+  The Principal is the person who would like to designate their healthcare decisions to someone else if they are unable to make those decisions themself.
 fields:
   - First Name: users[0].name.first
   - Middle Name: users[0].name.middle
@@ -157,7 +155,7 @@ fields:
 ---
 id: Birth Date
 question: |
-  What is your date of birth?
+  What is ${ users[0].name.first}'s date of birth?
 fields:
   - Birthdate: users[0].birthdate
     datatype: date
@@ -165,9 +163,9 @@ progress: 20
 ---
 id: your address
 question: |
-  What is your address?
+  What is ${ users[0].name.first} 's address?
 subquestion: |
-  Use the address where you currently recieve mall.
+  Use the address where ${ users[0].name.first} currently recieves mall.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -182,19 +180,19 @@ fields:
     required: False
 progress: 15
 ---
-id: Tell us about your healthcare proxy.
+id: Tell us about your healthcare agent.
 generic object: Individual
 question: |
-  Tell us about your healthcare proxy.
+  Tell us about ${ users[0].name.first }'s healthcare agent.
 subquestion: |
-  Your healthcare proxy is the person that you are selecting to make your healthcare decisions on your behalf if you are unable to. Provide the information of the person you have elected to designate as your Agent.
+   ${ users[0].name.first }'s healthcare agent is the person that they are selecting to make healthcare decisions on their behalf if they are unable to. Provide the information of the person ${ users[0].name.first} has elected as their Healthcare Agent.
 fields:
   - First Name: agents[0].name.first
   - Middle Name: agents[0].name.middle
     required: False
   - Last Name: agents[0].name.last
 ---
-id: Healthcare proxy contact info
+id: Healthcare agent contact info
 question: |
   Provide ${ agents[0].name.first }'s contact information.
 fields:
@@ -216,14 +214,14 @@ fields:
     required: false
 progress: 50
 ---
-id: Do you have an alternate healthcare proxy?
-continue button field: Do_you_have_an_alternate_healthcare_proxy
+id: Do you have an alternate healthcare agent?
+continue button field: Do_you_have_an_alternate_healthcare_agent
 question: |
-  Designate an alternate healthcare proxy
+  Designate a back-up healthcare agent
 subquestion: |
-  You may add an alternate who will take your proxy's place in the event that they are unable or unwilling to make healthcare decisions on your behalf. Add your alternate's details below.
+  You may add an back-up agent who will take the primary agent's place in the event that they are unable or unwilling to make healthcare decisions on your behalf. Add the back-up agent's details below.
 fields:
-  - "Would you like to designate an alternate healthcare proxy?": has_alternate
+  - "Would you like to designate a back-up healthcare agent?": has_alternate
     datatype: yesnoradio
     required: false
   - "First Name":  alternates[0].name.first
@@ -251,11 +249,11 @@ fields:
 ---
 id: exceptions
 question: |
-  Do you want to put any restrictions on the decisions your proxy can make?
+  Do you want to put any restrictions on the decisions your healthcare agent can make?
 subquestion: |
-  If you want to limit the decisions your healthcare proxy can make, you can list exceptions below. For example, you could add that your healthcare proxy is not authorized to deny pain medications, make life-sustaining decisions, or any other limitation you decide. If you do not wish to put any limitations on the healthcare decisions your proxy can make, you do not need to provide any acceptions.
+  If you want to limit the decisions your healthcare agent can make, you can list exceptions below. For example, you could add that your healthcare agent is not authorized to deny pain medications, make life-sustaining decisions, or any other limitation you decide. If you do not wish to put any limitations on the healthcare decisions your agent can make, you do not need to provide any exceptions.
 fields:
-  - "Are there any restrictions to the healthcare decisions your proxy can make?": has_exceptions
+  - "Are there any restrictions to the healthcare decisions your agent can make?": has_exceptions
     datatype: yesnoradio
     required: false
   - "Please list your exceptions here": agent_exceptions
@@ -265,11 +263,11 @@ fields:
 ---
 id: Is someone other than you signing on your behalf?
 question: |
-  Is someone other than you signing on your behalf?
+  Who is completing this form?
 subquestion: |
-  If you are physically unable to, you may designate a representative to sign on your behalf by completing the fields below. Note that the representative needs to be present with you in order to sign on your behalf.
+  If the person who is selecting a health care agent is physically unable to, they may designate a representative to sign on their behalf by completing the fields below.
 fields:
-  - "Do you have a representative?": has_representative
+  - "Are you completing this form for someone who is physically unable to complete it?": has_representative
     datatype: yesnoradio
   - First Name: representatives[0].name.first
     required: False
@@ -293,16 +291,9 @@ fields:
       states_list()
     default: MA
   - Zip: representatives[0].address.zip
+  - note: |
+      The representative will need to sign on the principal's behalf in the presence of the principal and two adult witnesses.
 progress: 35
----
-question: |
-  Sign your name
-subquestion: |
-  By signing your name, you agree to
-  designate ${agent_name} as your healthcare proxy.
-signature: principal_signature
-under: |
-  ${ principal_name }
 ---
 progress: 100
 mandatory: True
@@ -314,12 +305,12 @@ subquestion: |
   
   ### Next steps
   
-  1. Download the form.
-  2. Sign it in the presence of two witness
-  3. File it with your health care provider
-  4. Make sure to keep a copy for yourself
+  1. Download and print the form.
+  2. Sign it in the presence of two adult witnesses.
+  3. File it with your health care provider.
+  4. Make sure to keep a copy for yourself.
   
-  Below is a preview of your form.
+  Below is a copy of your form.
 
   ${Massachusetts_Healthcare_Proxy_attachment['final'] }
 need: Massachusetts_Healthcare_Proxy
@@ -335,30 +326,6 @@ attachment:
     skip undefined: True
     pdf template file: Massachusetts_Healthcare_Proxy.pdf
     fields:
-      - "signature_date": ${ signature_date }
-      - "signature_date__1": ${ signature_date }
-      # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
-      - "witness2_signature": ${ witnesses[1].signature if i == 'final' else '' }
-      # If it is a signature, test which file version we're expecting. leave it empty unless it's the final attachment version
-      - "witness1_signature": ${ witnesses[0].signature if i == 'final' else '' }
-      - "witness2_name_first": ${ witnesses[1].name.first }
-      - "witness2_name_middle": ${ witnesses[1].name.middle }
-      - "witness2_name_last": ${ witnesses[1].name.last }
-      - "witness1_name_suffix": ${ witnesses[1].name.suffix }
-      - "witness2_name_full": ${ str(witness2[0]) }
-      - "witness1_name_first": ${ witnesses[0].name.first }
-      - "witness1_name_middle": ${ witnesses[0].name.middle }
-      - "witness1_name_last": ${ witnesses[0].name.last }
-      - "witness1_name_suffix": ${ witnesses[0].name.suffix }
-      - "witness1_name_full": ${ str(witness1[0]) }
-      - "witness1_address_street": ${ witnesses[0].address.address }
-      - "witness2_address_street": ${ witnesses[1].address.address }
-      - "witness1_address_city": ${ witnesses[0].address.city }
-      - "witness1_address_zip": ${ witnesses[0].address.zip }
-      - "witness1_address_state": ${ witnesses[0].address.state }
-      - "witness2_address_zip": ${ witnesses[1].address.zip }
-      - "witness2_address_city": ${ witnesses[1].address.city }
-      - "witness2_address_state": ${ witnesses[1].address.state }
       - "users0_birthdate": ${ users[0].birthdate }
       - "users0_name_first": ${ users[0].name.first }
       - "users0_name_middle": ${ users[0].name.middle }
@@ -433,7 +400,7 @@ review:
       ${ principal_address_state }
   - Edit: agent_name
     button: |
-      Healthcare proxy full name (ex: John Doe):
+      Healthcare Agent full name (ex: John Doe):
       ${ agent_name }
   - Edit: agent_address_street
     button: |
