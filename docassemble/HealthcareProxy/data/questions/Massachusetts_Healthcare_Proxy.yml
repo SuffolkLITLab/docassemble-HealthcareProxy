@@ -319,6 +319,14 @@ attachment code: Massachusetts_Healthcare_Proxy_attachment['final']
 objects:
   - Massachusetts_Healthcare_Proxy_attachment: DADict
 ---
+#TODO - Work with Q to fix addendum over character limit then use the logic below.
+#code: |
+#  if over_max_char:
+#    Health_Care_Proxy_addendum_attachment.enabled = True
+#    agent_exceptions == "See attached addendum"
+#  else:
+#    Health_Care_Proxy_addendum_attachment.enabled = False
+---
 attachment:
     variable name: Massachusetts_Healthcare_Proxy_attachment[i]
     name: Healthcare Proxy

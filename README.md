@@ -4,5 +4,5 @@ A docassemble extension.
 
 ## Author
 
-mcarroll11@su.suffolk.edu
+kwilson5@su.suffolk.edu & mcarroll11@su.suffolk.edu
 
