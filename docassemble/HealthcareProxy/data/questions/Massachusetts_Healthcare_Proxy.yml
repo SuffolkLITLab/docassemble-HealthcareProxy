@@ -29,7 +29,8 @@ code: |
   })
 ---
 include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
+  - docassemble.AssemblyLine:al_package.yml
+  - docassemble.MassAccess:massaccess.yml
 ---
 features:
   navigation: True
@@ -37,6 +38,7 @@ features:
 sections:
   - review_Massachusetts_Healthcare_Proxy: Review your answers
 ---
+mandatory: True
 id: interview_order_Massachusetts_Healthcare_Proxy
 code: |
   # This is a placeholder to control logic flow in this interview
@@ -64,11 +66,11 @@ code: |
   agents[0].address.address
   if has_alternate:
     alternates[0].address.address
-  else:
-    Massachusetts_Healthcare_Proxy = True
-  basic_questions_signature_flow = False
-  Massachusetts_Healthcare_Proxy = True
+  # else:
+  #   Massachusetts_Healthcare_Proxy = True
+  # basic_questions_signature_flow = False
   nav.set_section('review_Massachusetts_Healthcare_Proxy')
+  Massachusetts_Healthcare_Proxy_download
 ---
 id: intro screen
 decoration: form-lineal
@@ -296,8 +298,8 @@ fields:
 progress: 35
 ---
 progress: 100
-mandatory: True
-id: Download screen
+event: Massachusetts_Healthcare_Proxy_download
+id: Download screen Massachusetts_Healthcare_Proxy
 question: |
   Your Form is Complete!
 subquestion: |
@@ -312,12 +314,20 @@ subquestion: |
   
   Below is a copy of your form.
 
-  ${Massachusetts_Healthcare_Proxy_attachment['final'] }
-need: Massachusetts_Healthcare_Proxy
-attachment code: Massachusetts_Healthcare_Proxy_attachment['final']
+  ${ al_user_bundle.download_list_html() }
+  
+  ${ al_user_bundle.send_button_html() }
 ---
 objects:
-  - Massachusetts_Healthcare_Proxy_attachment: DADict
+  - Massachusetts_Healthcare_Proxy_attachment: ALDocument.using(title="Healthcare Proxy", filename="healthcare_proxy.pdf", enabled=True, has_addendum=True, default_overflow_message=" [See addendum]")
+---
+code: |
+  Massachusetts_Healthcare_Proxy_attachment.overflow_fields['agent_exceptions'].overflow_trigger = 150
+  Massachusetts_Healthcare_Proxy_attachment.overflow_fields.gathered = True
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[Massachusetts_Healthcare_Proxy_attachment], title="Healthcare Proxy", filename="healthcare_proxy")
+  - al_court_bundle: ALDocumentBundle.using(elements=[Massachusetts_Healthcare_Proxy_attachment], title="Healthcare Proxy", filename="healthcare_proxy")  
 ---
 #TODO - Work with Q to fix addendum over character limit then use the logic below.
 #code: |
@@ -366,7 +376,7 @@ attachment:
       - "alternates0_address_state": ${ alternates[0].address.state }
       - "alternates0_address_city": ${ alternates[0].address.city }
       - "alternate_phone": ${ alternate_phone }
-      - "agent_exceptions": ${ agent_exceptions }
+      - "agent_exceptions": ${ Massachusetts_Healthcare_Proxy_attachment.safe_value('agent_exceptions') }
       - "representatives0_name_first": ${ representatives[0].name.first }
       - "representatives0_name_last": ${ representatives[0].name.last }
       - "representatives0_name_full": ${ str(representatives0[0]) }
@@ -378,175 +388,80 @@ attachment:
 id: Massachusetts_Healthcare_Proxy review screen
 event: review_Massachusetts_Healthcare_Proxy
 question: |
-  Placeholder Review Screen
+  Review your answers
 subquestion: |
   Edit your answers below
 review:
-  - Edit: principal_birthdate
-    button: |
-      Date of birth (ex: 09/09/1909):
-      ${ principal_birthdate.format() }
-  - Edit: principal_name
-    button: |
-      Full name (ex: Jane Smith):
-      ${ principal_name }
-  - Edit: principal_address_street
-    button: |
-      Street address:
-      ${ principal_address_street }
-  - Edit: principal_address_city
-    button: |
-      City:
-      ${ principal_address_city }
-  - Edit: principal_address_zip
-    button: |
-      Zipcode:
-      ${ principal_address_zip }
-  - Edit: principal_address_state
-    button: |
-      State:
-      ${ principal_address_state }
-  - Edit: agent_name
-    button: |
-      Healthcare Agent full name (ex: John Doe):
-      ${ agent_name }
-  - Edit: agent_address_street
-    button: |
-      Permanent address:
-      ${ agent_address_street }
-  - Edit: agent_address_state
-    button: |
-      State:
-      ${ agent_address_state }
-  - Edit: agent_address_city
-    button: |
-      City:
-      ${ agent_address_city }
-  - Edit: agent_address_zip
-    button: |
-      Zipcode:
-      ${ agent_address_zip }
-  - Edit: agent_phone_work
-    button: |
-      Phone number (ex: 1-555-555-1212):
-      ${ agent_phone_work }
-  - Edit: agent_email
-    button: |
-      E-mail (ex: johndoe@healthcare.com):
-      ${ agent_email }
-  - Edit: agent_phone_home
-    button: |
-      Phone number (ex: 1-555-555-1212):
-      ${ agent_phone_home }
-  - Edit: alternate_name
-    button: |
-      Full name (ex: John Smith):
-      ${ alternate_name }
-  - Edit: atlernate_address_city
-    button: |
-      City:
-      ${ atlernate_address_city }
-  - Edit: alternate_address_zip
-    button: |
-      Zipcode:
-      ${ alternate_address_zip }
-  - Edit: alternate_address_state
-    button: |
-      State:
-      ${ alternate_address_state }
-  - Edit: alternate_address_street
-    button: |
-      Address:
-      ${ alternate_address_street }
-  - Edit: alternate_phone
-    button: |
-      Phone number (ex: 1-555-1212):
-      ${ alternate_phone }
-  - Edit: agent_exceptions
-    button: |
-      Exceptions:
-      ${ word(yesno(agent_exceptions)) }
-  - Edit: representitive_address_street
-    button: |
-      Permanent Address:
-      ${ representitive_address_street }
-  - Edit: representitive_name
-    button: |
-      Full name (ex: Judy Dane):
-      ${ representitive_name }
-  - Edit: representitive_address_city
-    button: |
-      City:
-      ${ representitive_address_city }
-  - Edit: representitive_address_state
-    button: |
-      State:
-      ${ representitive_address_state }
-  - Edit: representitive_address_zip
-    button: |
-      Zipcode:
-      ${ representitive_address_zip }
-  - Edit: signature_date
-    button: |
-      signature_date:
-      ${ signature_date }
-  - Edit: witnesses[1].signature
-    button: |
-      witnesses[1].signature:
-      ${ witnesses[1].signature }
-  - Edit: witnesses[0].signature
-    button: |
-      witnesses[0].signature:
-      ${ witnesses[0].signature }
-  - Edit: witnesses[1]
-    button: |
-      witnesses[1]:
-      ${ witnesses[1] }
-  - Edit: witnesses[0]
-    button: |
-      witnesses[0]:
-      ${ witnesses[0] }
-  - Edit: witnesses[0].address.address
-    button: |
-      witnesses[0].address.address:
-      ${ witnesses[0].address.address }
-  - Edit: witnesses[1].address.address
-    button: |
-      witnesses[1].address.address:
-      ${ witnesses[1].address.address }
-  - Edit: witnesses[0].address.city
-    button: |
-      witnesses[0].address.city:
-      ${ witnesses[0].address.city }
-  - Edit: witnesses[0].address.zip
-    button: |
-      witnesses[0].address.zip:
-      ${ witnesses[0].address.zip }
-  - Edit: witnesses[0].address.state
-    button: |
-      witnesses[0].address.state:
-      ${ witnesses[0].address.state }
-  - Edit: witnesses[1].address.zip
-    button: |
-      witnesses[1].address.zip:
-      ${ witnesses[1].address.zip }
-  - Edit: witnesses[1].address.city
-    button: |
-      witnesses[1].address.city:
-      ${ witnesses[1].address.city }
-  - Edit: witnesses[1].address.state
-    button: |
-      witnesses[1].address.state:
-      ${ witnesses[1].address.state }
-  - Edit: principal_signature
-    button: |
-      principal_signature:
-      ${ principal_signature }
-  - Edit: agent_signature
-    button: |
-      agent_signature:
-      ${ agent_signature }
-  - Edit: alternate_signature
-    button: |
-      alternate_signature:
-      ${ alternate_signature }
+  - Edit: |-
+      users[0].name.first
+    button: |-
+      Your name : ${ users[0] }
+  - Edit: |-
+      users[0].birthdate
+    button: |-
+      Birthdate : ${ users[0].birthdate }
+  - Edit: |-
+      users[0].address.address
+    button: |-
+      Your address : ${ users[0].address.on_one_line() }
+  - Edit: |-
+      agents[0].name.first
+    button: |-
+      Agent's Name : ${ agents[0] }
+  - Edit: |-
+      agents[0].address.address
+    button: |-
+      Agent's Address : ${ agents[0].address.on_one_line() }
+  - Edit: |-
+      agent_phone_home
+    button: |-
+      Mobile Number : ${ agent_phone_home }
+  - Edit: |-
+      agent_phone_work
+    button: |-
+      Work Number : ${ agent_phone_work }
+  - Edit: |-
+      agent_email
+    button: |-
+      E-mail : ${ agent_email }
+  - Edit: |-
+      has_alternate
+    button: |-
+      Would you like to designate a back-up healthcare agent? : ${ has_alternate }
+  - Edit: |-
+      alternates[0].name.first
+    button: |-
+      First Name : ${ alternates[0].name.first }
+  - Edit: |-
+      alternates[0].name.last
+    button: |-
+      Last Name : ${ alternates[0].name.last }
+  - Edit: |-
+      alternates[0].address.address
+    button: |-
+      Alternate's Address : ${ alternates[0].address.on_one_line() }
+  - Edit: |-
+      alternate_phone
+    button: |-
+      Alternate's Phone number : ${ alternate_phone }
+  - Edit: |-
+      has_exceptions
+    button: |-
+      Are there any restrictions to the healthcare decisions your agent can make? : ${ has_exceptions }
+  - Edit: |-
+      agent_exceptions
+    button: |-
+      Please list your exceptions here :       
+      > ${ agent_exceptions }
+  - Edit: |-
+      has_representative
+    button: |-
+      Are you completing this form for someone who is physically unable to complete it? : ${ has_representative }
+  - Edit: |-
+      representatives[0].name.first
+    button: |-
+      Name of representative : ${ representatives[0] }
+  - Edit: |-
+      representatives[0].address.address
+    button: |      
+      Address : ${ representatives[0].address.on_one_line() }
